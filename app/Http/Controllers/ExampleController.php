@@ -17,7 +17,7 @@ class ExampleController extends Controller
             'petsNames'=>$petsNames
         ]);
     }
-    public function aboutPage( ): string {
-        return '<h1>About page</h1><a href="/">Back Home</a>';
+    public function aboutPage( ) {
+        return view('single-post');
     }
 }
