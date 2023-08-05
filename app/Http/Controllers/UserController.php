@@ -9,10 +9,15 @@ use Illuminate\Validation\Rule;
 use function auth;
 use function bcrypt;
 use function dd;
+use function redirect;
 use function view;
 
 class UserController extends Controller
 {
+    public function logout(){
+        auth()->logout();
+        return redirect('/')->with('success','You logout successfully.');
+    }
     public function showHomePage(){
         if(auth()->check()){
             return view('home-feed');
@@ -27,9 +32,9 @@ class UserController extends Controller
         ]);
         if(auth()->attempt(['username'=>$incomingFields['loginUsername'],'password'=>$incomingFields['loginPassword']])){
             $request->session()->regenerate();
-            return view('home-feed');
+            return redirect('/')->with('success','You login successfully');
         }else {
-            return view('homepage');
+            return redirect('/')->with('failure','Your login failed');
         }
 
     }
@@ -40,7 +45,8 @@ class UserController extends Controller
             'password'=>['required','min:8','confirmed']
         ]);
         $incomingFields['password']=bcrypt($incomingFields['password']);
-        User::create($incomingFields);
-        return 'Hello from register function';
+        $user=User::create($incomingFields);
+        auth()->login($user);
+        return redirect('/')->with('success','Your account war registered successfully');
     }
 }
