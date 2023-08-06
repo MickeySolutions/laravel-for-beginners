@@ -14,6 +14,9 @@ use function view;
 
 class UserController extends Controller
 {
+    public function profile(User $user){
+        return view('profile-posts',['user'=>$user]);
+    }
     public function logout(){
         auth()->logout();
         return redirect('/')->with('success','You logout successfully.');
