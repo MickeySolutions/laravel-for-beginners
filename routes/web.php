@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //User related routes
-Route::get('/', [UserController::class, 'showHomePage']);
-Route::post('/register',[UserController::class,'register']);
-Route::post('/login',[UserController::class,'login']);
-Route::post('/logout',[UserController::class,'logout']);
+Route::get('/', [UserController::class, 'showHomePage'])->name("login");
+Route::post('/register',[UserController::class,'register'])->middleware('guest');
+Route::post('/login',[UserController::class,'login'])->middleware('guest');
+Route::post('/logout',[UserController::class,'logout'])->middleware('mustBeLogIn');
 //Post related routes
-Route::get('/create-post',[PostController::class,'showCreatePost']);
-Route::post('/create-post',[PostController::class,'storeNewPost']);
+Route::get('/create-post',[PostController::class,'showCreatePost'])->middleware('mustBeLogIn');
+Route::post('/create-post',[PostController::class,'storeNewPost'])->middleware('mustBeLogIn');
 Route::get("/posts/{post}",[PostController::class,"viewSinglePost"]);
