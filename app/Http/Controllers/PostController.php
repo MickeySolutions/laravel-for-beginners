@@ -14,6 +14,21 @@ use function view;
 
 class PostController extends Controller
 {
+    public function showEditPost(Post $post){
+        return view('edit-post',['post'=>$post]);
+    }
+    public function updatePost(Post $post, Request $request){
+        $incomingFields=$request->validate([
+            'title'=>'required',
+            'body'=>'required'
+        ]);
+        $incomingFields['body']=Str::markdown($incomingFields['body']);
+        $incomingFields['title']=strip_tags($incomingFields['title']);
+        $incomingFields['body']=strip_tags($incomingFields['body'],'<br><h1><h3><ul><ol><strong>');
+
+        $post->update($incomingFields);
+        return back()->with('success','The post was successfully update');
+    }
     public function delete(Post $post){
         if(auth()->user()->cannot('delete',$post)){
             return redirect("/post/{$post->id}")->with('failure','You are not allowed to delete the post');
