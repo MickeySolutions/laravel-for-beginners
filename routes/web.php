@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //Gate related routes
-Route::get('admin-only',[GateController::class,'adminOnly']);
+Route::get('admin-only',[GateController::class,'adminOnly'])->middleware('can:canViewPage');
 //User related routes
 Route::get('/', [UserController::class, 'showHomePage'])->name("login");
 Route::post('/register',[UserController::class,'register'])->middleware('guest');
