@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GateController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+//Gate related routes
+Route::get('admin-only',[GateController::class,'adminOnly']);
 //User related routes
 Route::get('/', [UserController::class, 'showHomePage'])->name("login");
 Route::post('/register',[UserController::class,'register'])->middleware('guest');
