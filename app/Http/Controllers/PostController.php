@@ -14,6 +14,13 @@ use function view;
 
 class PostController extends Controller
 {
+    public function delete(Post $post){
+        if(auth()->user()->cannot('delete',$post)){
+            return redirect("/post/{$post->id}")->with('failure','You are not allowed to delete the post');
+        }
+        $post->delete();
+        return redirect('/profile/'.auth()->user()->username)->with('success','You delete the post successfully');
+    }
     public function viewSinglePost(Post $post){
         return view('single-post',['post'=>$post]);
     }
@@ -32,6 +39,6 @@ class PostController extends Controller
         $incomingFields['body']=strip_tags($incomingFields['body'],'<br><h1><h3><ul><ol><strong>');
 
         $post=Post::create($incomingFields);
-        return redirect("/posts/{$post->id}")->with('success', 'Your post was created successfully');
+        return redirect("/post/{$post->id}")->with('success', 'Your post was created successfully');
     }
 }

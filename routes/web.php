@@ -23,5 +23,6 @@ Route::post('/logout',[UserController::class,'logout'])->middleware('mustBeLogIn
 Route::get('/create-post',[PostController::class,'showCreatePost'])->middleware('mustBeLogIn');
 Route::post('/create-post',[PostController::class,'storeNewPost'])->middleware('mustBeLogIn');
 Route::get("/post/{post}",[PostController::class,"viewSinglePost"]);
+Route::delete("/post/{post}",[PostController::class,'delete']);
 //Profile related routes
 Route::get('/profile/{user:username}',[UserController::class,'profile'])->middleware('auth');
