@@ -14,6 +14,13 @@ use function view;
 
 class UserController extends Controller
 {
+    public function storeAvatar(Request $request){
+        $request->file('avatar')->store('public/avatars');
+        return 'Hey';
+    }
+    public function showManageAvatar(){
+        return view('manage-avatar');
+    }
     public function profile(User $user){
         return view('profile-posts',['user'=>$user]);
     }
