@@ -31,5 +31,5 @@ Route::put('/post/{post:id}',[PostController::class,'updatePost'])->middleware('
 Route::get('/post/{post:id}/edit',[PostController::class,'showEditPost'])->middleware('can:update,post');
 //Profile related routes
 Route::get('/profile/{user:username}',[UserController::class,'profile'])->middleware('auth');
-Route::get('/manage-avatar',[UserController::class,'showManageAvatar']);
-Route::post('/manage-avatar',[UserController::class,'storeAvatar']);
+Route::get('/manage-avatar',[UserController::class,'showManageAvatar'])->middleware('mustBeLogIn');;
+Route::post('/manage-avatar',[UserController::class,'storeAvatar'])->middleware('mustBeLogIn');;

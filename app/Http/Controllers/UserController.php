@@ -4,19 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
+use Intervention\Image\Facades\Image;
+
 use function auth;
+use function back;
 use function bcrypt;
 use function dd;
 use function redirect;
+use function str_replace;
+use function uniqid;
 use function view;
 
 class UserController extends Controller
 {
     public function storeAvatar(Request $request){
-        $request->file('avatar')->store('public/avatars');
-        return 'Hey';
+        $request->validate([
+            'avatar'=>'required|image|max:3000'
+        ]);
+        $user=auth()->user();
+        $fileName=$user->id.'-'.uniqid().'.jpg';
+
+        $imgData=Image::make($request->file('avatar'))->fit(120)->encode('jpg');
+        Storage::put('public/avatars/'.$fileName,$imgData);
+
+        $oldAvatar=$user->avatar;
+
+        $user->avatar=$fileName;
+        $user->save();
+
+        if ($oldAvatar != '/default-profile.jpg'){
+            Storage::delete(str_replace("/storage/",'public/',$oldAvatar));
+        }
+        return back()->with('success','Your avatar was uploaded successfully');
     }
     public function showManageAvatar(){
         return view('manage-avatar');
