@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
+
 
 use Intervention\Image\Facades\Image;
 
@@ -43,8 +46,23 @@ class UserController extends Controller
     public function showManageAvatar(){
         return view('manage-avatar');
     }
+    private function getSharedData($user){
+        if (auth()->check()){
+           $currentlyFollowing=Follow::where([['user_id','=',auth()->user()->id],['followeduser','=',$user->id]])->count();
+        }
+        View::share('sharedData',['followingCount'=>$user->followingTheseUsers()->count(),'followerCount'=>$user->followers()->count(),'postCount'=>$user->posts()->count(),'avatar'=>$user->avatar,'username'=>$user->username,'currentlyFollowing'=>$currentlyFollowing,'user'=>$user]);
+    }
     public function profile(User $user){
-        return view('profile-posts',['user'=>$user]);
+        $this->getSharedData($user);
+        return view('profile-posts',['posts'=>$user->posts()->latest()->get()]);
+    }
+    public function profileFollowers(User $user){
+        $this->getSharedData($user);
+        return view('profile-followers',['followers'=>$user->followers()->latest()->get()]);
+    }
+    public function profileFollowing(User $user){
+        $this->getSharedData($user);
+        return view('profile-following',['following'=>$user->followingTheseUsers()->latest()->get()]);
     }
     public function logout(){
         auth()->logout();
@@ -52,7 +70,7 @@ class UserController extends Controller
     }
     public function showHomePage(){
         if(auth()->check()){
-            return view('home-feed');
+            return view('home-feed',['posts'=>auth()->user()->feedPosts()->latest()->paginate(5)]);
         }else{
             return view('homepage');
         }
