@@ -14,6 +14,11 @@ use function view;
 
 class PostController extends Controller
 {
+    public function search($term){
+        $posts=Post::search($term)->get();
+        $posts->load('user:id,username,avatar');
+        return $posts;
+    }
     public function showEditPost(Post $post){
         return view('edit-post',['post'=>$post]);
     }

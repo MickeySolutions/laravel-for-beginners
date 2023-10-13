@@ -35,6 +35,8 @@ Route::get("/post/{post}",[PostController::class,"viewSinglePost"]);
 Route::delete("/post/{post}",[PostController::class,'delete'])->middleware('can:delete,post');
 Route::put('/post/{post:id}',[PostController::class,'updatePost'])->middleware('can:update,post');
 Route::get('/post/{post:id}/edit',[PostController::class,'showEditPost'])->middleware('can:update,post');
+Route::get("/search/{term}",[PostController::class,'search']);
+
 //Profile related routes
 Route::get('/profile/{user:username}',[UserController::class,'profile'])->middleware('auth');
 Route::get('/profile/{user:username}/followers',[UserController::class,'profileFollowers'])->middleware('auth');
