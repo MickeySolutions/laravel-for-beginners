@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewPostEmail;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 use function auth;
@@ -59,6 +61,8 @@ class PostController extends Controller
         $incomingFields['body']=strip_tags($incomingFields['body'],'<br><h1><h3><ul><ol><strong>');
 
         $post=Post::create($incomingFields);
+
+        Mail::to('milanco.ivanov@gmail.com')->send(new NewPostEmail(['name'=>auth()->user()->username, 'title'=>$post->title]));
         return redirect("/post/{$post->id}")->with('success', 'Your post was created successfully');
     }
 }
