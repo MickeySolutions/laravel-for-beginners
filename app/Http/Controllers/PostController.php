@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\NewPostEmail;
+use App\Jobs\SendNewPostEmail;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 use function auth;
+use function dispatch;
 use function redirect;
 use function strip_tags;
 use function view;
@@ -62,7 +62,8 @@ class PostController extends Controller
 
         $post=Post::create($incomingFields);
 
-        Mail::to('milanco.ivanov@gmail.com')->send(new NewPostEmail(['name'=>auth()->user()->username, 'title'=>$post->title]));
+        dispatch(new SendNewPostEmail(['sendTo'=>'milanco.ivanov@gmail.com','name'=>auth()->user()->username, 'title'=>$post->title]));
+
         return redirect("/post/{$post->id}")->with('success', 'Your post was created successfully');
     }
 }
