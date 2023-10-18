@@ -43,6 +43,13 @@ class PostController extends Controller
         $post->delete();
         return redirect('/profile/'.auth()->user()->username)->with('success','You delete the post successfully');
     }
+    public function deleteApi(Post $post){
+        if(auth()->user()->cannot('delete',$post)){
+            return "User can not delete post";
+        }
+        $post->delete();
+        return 'You delete the post successfully';
+    }
     public function viewSinglePost(Post $post){
         return view('single-post',['post'=>$post]);
     }
@@ -65,5 +72,22 @@ class PostController extends Controller
         dispatch(new SendNewPostEmail(['sendTo'=>'milanco.ivanov@gmail.com','name'=>auth()->user()->username, 'title'=>$post->title]));
 
         return redirect("/post/{$post->id}")->with('success', 'Your post was created successfully');
+    }
+    public function storeNewPostApi(Request $request){
+        $incomingFields=$request->validate([
+            'title'=>'required',
+            'body'=>'required'
+        ]);
+        $incomingFields['body']=Str::markdown($incomingFields['body']);
+
+        $incomingFields['user_id']=auth()->id();
+        $incomingFields['title']=strip_tags($incomingFields['title']);
+        $incomingFields['body']=strip_tags($incomingFields['body'],'<br><h1><h3><ul><ol><strong>');
+
+        $post=Post::create($incomingFields);
+
+        dispatch(new SendNewPostEmail(['sendTo'=>'milanco.ivanov@gmail.com','name'=>auth()->user()->username, 'title'=>$post->title]));
+
+        return $post->id;
     }
 }

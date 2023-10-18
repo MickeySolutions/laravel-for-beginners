@@ -92,6 +92,18 @@ class UserController extends Controller
             return view('homepage',['postCount'=>$postCount]);
         }
     }
+    public function loginApi(Request $request){
+        $incomingFields=$request->validate([
+            'username'=>'required',
+            'password'=>'required'
+        ]);
+        if (auth()->attempt($incomingFields)){
+            $user=User::where('username',$incomingFields['username'])->first();
+            $token=$user->createToken('ourapptoken')->plainTextToken;
+            return $token;
+        }
+        return 'Sorry! You have errors at your request.';
+    }
     public function login(Request $request){
         $incomingFields=$request->validate([
             'loginUsername'=>'required',
@@ -107,14 +119,17 @@ class UserController extends Controller
 
     }
     public function register(Request $request){
+
         $incomingFields=$request->validate([
             'username'=>['required','min:3','max:30',Rule::unique('users','username')],
             'email'=>['required','email',Rule::unique('users','email')],
-            'password'=>['required','min:8','confirmed']
+            'password'=>['required','min:8','confirmed'],
         ]);
+        $incomingFields['isAdmin']=false;
         $incomingFields['password']=bcrypt($incomingFields['password']);
+
         $user=User::create($incomingFields);
         auth()->login($user);
-        return redirect('/')->with('success','Your account war registered successfully');
+        return redirect('/')->with('success','Your account was registered successfully');
     }
 }
